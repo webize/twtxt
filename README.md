@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/webize/twtxt.png?label=ready&title=Ready)](https://waffle.io/webize/twtxt)
 twtxt
 ~~~~~
 |pypi| |build| |coverage| |gitter| |license|
