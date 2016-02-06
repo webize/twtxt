@@ -32,31 +32,16 @@ Installation
 
 Release version:
 ================
-1) Make sure that you have at least **Python 3.4.1** installed.
+1) Make sure that you have the latest node / npm
 
-2) You than can install this package simply via pip:
+2) You than can install this package simply via npm:
 
 .. code::
 
-    $ pip3 install twtxt
-
-*Tip*: Instead of installing the package globally (as root), you may want to install this package locally by passing ``--user`` to pip, but you then have to make sure that you have included ``~/.local/bin/`` in your ``$PATH``. Using pyvenv and running twtxt from within a virtualenv is of course also an option!
+    $ npm install twtxt
 
 3) Now run ``twtxt quickstart``. :)
 
-Development version:
-====================
-1) Clone the git repository:
-
-.. code::
-
-    $ git clone https://github.com/buckket/twtxt.git
-
-2) Install the package via pip in developer mode:
-
-.. code::
-
-    $ pip3 install -e twtxt/
 
 Usage
 -----
@@ -69,7 +54,7 @@ Follow a source:
 
 .. code::
 
-    $ twtxt follow bob http://bobsplace.xyz/twtxt
+    $ twtxt follow bob http://bobsplace.xyz/twtxt.ttl#me
     ✓ You’re now following bob.
 
 List all sources you’re following:
@@ -78,8 +63,8 @@ List all sources you’re following:
 .. code::
 
     $ twtxt following
-    ➤ alice @ https://example.org/alice.txt
-    ➤ bob @ http://bobsplace.xyz/twtxt
+    ➤ alice @ https://example.org/alice.ttl#me
+    ➤ bob @ http://bobsplace.xyz/twtxt.ttl#me
 
 Unfollow a source:
 ==================
@@ -125,11 +110,11 @@ Here’s an example ``conf`` file, showing every currently supported option:
     limit_timeline = 20
     timeout = 5.0
     sorting = descending
-    post_tweet_hook = "scp {twtfile} buckket@example.org:~/public_html/twtxt.txt"
+    post_tweet_hook = "scp {twtfile} buckket@example.org:~/public_html/twtxt.ttl"
 
     [following]
-    bob = https://example.org/bob.txt
-    alice = https://example.org/alice.txt
+    bob = https://example.org/bob.tll#me
+    alice = https://example.org/alice.ttl#me
 
 
 [twtxt] section:
@@ -172,6 +157,7 @@ Take a look at this example file:
 
 .. code::
 
+    2016-02-06T23:24+01 npm version
     2016-02-04T13:30+01	You can really go crazy here! ┐(ﾟ∀ﾟ)┌
     2016-02-01T11:00+01	This is just another example.
     2015-12-12T12:00+01	Fiat lux!
@@ -186,28 +172,3 @@ Contributions
 License
 -------
 twtxt is released under the MIT License. See the bundled LICENSE file for details.
-
-
-.. |pypi| image:: https://img.shields.io/pypi/v/twtxt.svg?style=flat&label=version
-    :target: https://pypi.python.org/pypi/twtxt
-    :alt: Latest version released on PyPi
-
-.. |build| image:: https://img.shields.io/travis/buckket/twtxt/master.svg?style=flat
-    :target: http://travis-ci.org/buckket/twtxt
-    :alt: Build status of the master branch
-
-.. |coverage| image:: https://img.shields.io/coveralls/buckket/twtxt/master.svg?style=flat
-    :target: https://coveralls.io/r/buckket/twtxt?branch=master
-    :alt: Test coverage
-
-.. |gitter| image:: https://img.shields.io/gitter/room/buckket/twtxt.svg?style=flat
-    :target: https://gitter.im/buckket/twtxt
-    :alt: Chat on gitter
-
-.. |license| image:: https://img.shields.io/badge/license-MIT-blue.svg?style=flat
-    :target: https://raw.githubusercontent.com/buckket/twtxt/master/LICENSE
-    :alt: Package license
-
-.. |demo| image:: https://asciinema.org/a/1w2q3suhgrzh2hgltddvk9ot4.png
-    :target: https://asciinema.org/a/1w2q3suhgrzh2hgltddvk9ot4
-    :alt: Demo

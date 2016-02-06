@@ -1,0 +1,26 @@
+{
+  "name": "twtxt",
+  "version": "0.0.1",
+  "description": "a decentralised, minimalist microblogging service for hackers",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webize/twtxt.git"
+  },
+  "keywords": [
+    "twtxt",
+    "solid"
+  ],
+  "author": "Melvin Carvalho <melvincarvalho@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/webize/twtxt/issues"
+  },
+  "homepage": "https://github.com/webize/twtxt#readme"
+}
