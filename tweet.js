@@ -1,3 +1,7 @@
 var description = process.argv[2];
 
-console.log(description);
+var now = new Date().toISOString();
+
+var output = now + "\t" + description;
+
+console.log(output);
