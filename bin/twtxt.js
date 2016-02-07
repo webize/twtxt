@@ -9,21 +9,6 @@ var childProcess  = require('child_process');
 var readline      = require('readline');
 var moment        = require('moment');
 
-var hook          = require("../lib/helper").hook;
-var getUserHome   = require("../lib/helper").getUserHome;
-var getUserName   = require("../lib/helper").getUserName;
-
-var getConfigFile = require("../lib/config").getConfigFile;
-var getConfig     = require("../lib/config").getConfig;
-
-var tweet         = require("../lib/cli").tweet;
-var follow        = require("../lib/cli").follow;
-var unfollow      = require("../lib/cli").unfollow;
-var following     = require("../lib/cli").following;
-var quickstart    = require("../lib/cli").quickstart;
-var timeline      = require("../lib/cli").timeline;
-
-
 var error   = debug('app:error');
 
 // defaults
