@@ -1,19 +1,20 @@
 #!/usr/bin/env node
 
 // requires
-var fs           = require('fs');
-var program      = require('commander');
-var request      = require('request');
-var debug        = require('debug')('twtxt');
-var childProcess = require('child_process');
-var readline     = require('readline');
-var moment       = require('moment');
+var fs            = require('fs');
+var program       = require('commander');
+var request       = require('request');
+var debug         = require('debug')('twtxt');
+var childProcess  = require('child_process');
+var readline      = require('readline');
+var moment        = require('moment');
 
-var hook         = require("../lib/helper").hook;
-var getUserHome  = require("../lib/helper").getUserHome;
-var getUserName  = require("../lib/helper").getUserName;
+var hook          = require("../lib/helper").hook;
+var getUserHome   = require("../lib/helper").getUserHome;
+var getUserName   = require("../lib/helper").getUserName;
 
-var getUserName  = require("../lib/config").getUserName;
+var getConfigFile = require("../lib/config").getConfigFile;
+var getConfig     = require("../lib/config").getConfig;
 
 
 var error   = debug('app:error');
@@ -23,49 +24,6 @@ var default_limit_timeline = 20;
 
 // config functions
 
-/**
-* gets the default config file
-* @return {String} returns location of config file
-*/
-function getConfigFile() {
-  var defaultConfigFile = 'twtxt.json';
-  var ret =  getUserHome() + '/.config/' + defaultConfigFile;
-  debug('default : ' + ret);
-  return program.config || ret;
-}
-
-/**
-* gets a config
-* @return {String} A config
-*/
-function getConfig() {
-  var configFile = getConfigFile();
-  debug('getting config from : ' + configFile);
-  try {
-    var config  = require(configFile);
-    debug('config : ');
-    debug(config);
-    return (config);
-  } catch (e) {
-    console.error(e);
-    process.exit(-1);
-  }
-}
-
-/**
-* write a config file
-* @param  {Object} config the config
-*/
-function writeConfig(config) {
-  var configFile = getConfigFile();
-  debug('writing : ');
-  debug(config);
-  fs.writeFile(configFile, JSON.stringify(config), function(err) {
-    if (err) {
-      console.error(err);
-    }
-  });
-}
 
 // twtxt functions
 
@@ -84,100 +42,7 @@ function getTimelineFile() {
   return filename;
 }
 
-/**
-* serializes a tweet
-* @param  {String} description The desscription
-* @param  {[type]} date        Date
-* @return {String}             formatted entry
-*/
-function serializeTweet(description, date) {
-  var now    = date || new Date().toISOString();
-  var output = now + "\t" + description + '\n';
-  debug('blogging : ' + output);
-  return output;
-}
 
-/**
-* parseTimeline
-* @param  {String}   uri      which uri
-* @param  {String}   nick     which nick
-* @param  {Function} callback The callback
-*/
-function parseTimeline(uri, nick, callback) {
-  if (uri && uri.indexOf('http') === 0) {
-    request(uri, function (error, response, body) {
-      if (!error && response.statusCode == 200) {
-        var ret = [];
-        var arr = body.split('\n');
-        for (var i = 0; i < arr.length; i++) {
-          if (arr[i]) {
-            ret.push(parsePost(arr[i], nick));
-          }
-        }
-        callback(null, (ret));
-      } else {
-        callback(error);
-      }
-    });
-  } else {
-    fs.readFile(uri, "utf-8", function(err, val) {
-      if (err) {
-        callback(err);
-      } else {
-        var ret = [];
-        var arr = val.split('\n');
-        for (var i = 0; i < arr.length; i++) {
-          if (arr[i]) {
-            ret.push(parsePost(arr[i], nick));
-          }
-        }
-        callback(null, (ret));
-      }
-    });
-  }
-}
-
-/**
-* parses a post
-* @param  {String} post A post
-* @param  {String} nick A nick
-* @return {Object}      A time, description and nick
-*/
-function parsePost(post, nick) {
-  var vals = post.split('\t');
-  return { "time" : vals[0], "description" : vals[1], "nick" : nick };
-}
-
-/**
-* writes a tweet
-* @param  {String} twtfile file to write to
-* @param  {[type]} output  tweet
-*/
-function writeTweet(twtfile, output) {
-  var config = getConfig();
-  parseTimeline(twtfile, config.user, function(err, posts) {
-    str = '';
-    posts = posts.sort(function(a,b){
-      return new Date(a.time) > new Date(b.time);
-    });
-    posts = posts.concat(parsePost(output, config.user));
-    var limit_timeline = config.limit_timeline || default_limit_timeline;
-    if (posts.length > limit_timeline) {
-      posts.splice(0, posts.length - limit_timeline);
-    }
-
-    for (var i = 0; i < posts.length; i++) {
-      str += posts[i].time + '\t' + posts[i].description + '\n';
-    }
-
-    debug('writing ' + twtfile + ' with ' + str);
-    fs.writeFile(twtfile, str, function (err) {
-      if (err) {
-        console.error(err);
-      }
-    });
-  });
-}
 
 /**
 * Append a new tweet to your twtxt file.
@@ -192,20 +57,6 @@ function tweet(description) {
   writeTweet(twtfile, output);
   if (config.post_tweet_hook) {
     hook(config.post_tweet_hook);
-  }
-}
-
-/**
-* displays the posts
-* @param  {Array} posts the posts to display
-*/
-function displayPosts(posts) {
-  posts = posts.sort(function(a,b){
-    return new Date(a.time) > new Date(b.time);
-  });
-  for (var i = 0; i < posts.length; i++) {
-    console.log("➤ " + posts[i].nick + ' (' + moment(posts[i].time).fromNow() + ')');
-    console.log(posts[i].description);
   }
 }
 
