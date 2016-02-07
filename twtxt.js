@@ -7,7 +7,7 @@ var request      = require('request');
 var debug        = require('debug')('twtxt');
 var childProcess = require('child_process');
 var readline     = require('readline');
-
+var moment       = require('moment');
 
 var error   = debug('app:error');
 
@@ -238,7 +238,7 @@ function displayPosts(posts) {
     return new Date(a.time) > new Date(b.time);
   });
   for (var i = 0; i < posts.length; i++) {
-    console.log("➤ " + posts[i].nick + ' (' + posts[i].time + ')');
+    console.log("➤ " + posts[i].nick + ' (' + moment(posts[i].time).fromNow() + ')');
     console.log(posts[i].description);
   }
 }

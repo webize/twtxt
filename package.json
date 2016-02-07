@@ -1,6 +1,6 @@
 {
   "name": "twtxt",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "a decentralised, minimalist microblogging service for hackers",
   "main": "twtxt.js",
   "directories": {
@@ -26,6 +26,7 @@
   "dependencies": {
     "commander": "^2.9.0",
     "debug": "^2.2.0",
+    "moment": "^2.11.2",
     "request": "^2.69.0"
   },
   "bin": {
