@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 // requires
-var fs = require('fs');
+var fs      = require('fs');
+var program = require('commander');
 
 // config functions
 
@@ -55,7 +56,7 @@ function getTimellineFile() {
   var HOME     = getUserHome();
   var timelineFile  = HOME + '/' + filename;
 
-  var filename = config.twtfile || timelineFile;  
+  var filename = config.twtfile || timelineFile;
 
   return timelineFile;
 }
@@ -73,16 +74,13 @@ function serializeTweet(description, date) {
   return output;
 }
 
+
 /**
- * Append a new tweet to your twtxt file.
- * @return {[type]} [description]
+ * writes a tweet
+ * @param  {String} twtfile file to write to
+ * @param  {[type]} output  tweet
  */
-function tweet(description) {
-  // init
-  var twtfile  = getTimellineFile();
-
-  output = serializeTweet(description);
-
+function writeTweet(twtfile, output) {
   fs.appendFile(twtfile, output, function (err) {
     if (err) {
       console.error(err);
@@ -90,25 +88,61 @@ function tweet(description) {
   });
 }
 
+/**
+ * Append a new tweet to your twtxt file.
+ * @return {[type]} [description]
+ */
+function tweet(description) {
+  // init
+  var twtfile  = getTimellineFile();
+  output = serializeTweet(description);
+  writeTweet(twtfile, output);
+
+}
+
+
+// cli functions
 
 /**
  * run as bin
  */
 function bin() {
   var MAXCHARS = 140;
-  var description = process.argv[2];
 
-  if (!description) {
-    console.error('Usage: twtxt <text>');
-    process.exit(-1);
+  program
+    .arguments('<cmd> [arg]')
+    .action(function (cmd, arg) {
+       cmdValue = cmd;
+       argValue = arg;
+    });
+
+  program.parse(process.argv);
+
+  if (typeof cmdValue === 'undefined') {
+     console.error('no command given!');
+     process.exit(1);
+  }
+  console.log('command:', cmdValue);
+  console.log('arg:', argValue || "no arg given");
+
+  if (cmdValue === 'tweet') {
+    var description = argValue;
+
+    if (!description) {
+      console.error('Usage: twtxt tweet <text>');
+      process.exit(-1);
+    }
+
+    if (description && description.length > MAXCHARS) {
+      console.error('Maximum tweet length : ' + MAXCHARS);
+      process.exit(-1);
+    }
+
+    tweet(description);
+  } else {
+    console.error(cmdValue + ' : not recognized');
   }
 
-  if (description && description.length > MAXCHARS) {
-    console.error('Maximum tweet length : ' + MAXCHARS);
-    process.exit(-1);
-  }
-
-  tweet(description);
 }
 
 
