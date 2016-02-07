@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 // requires
 var fs = require('fs');
 
@@ -49,9 +51,12 @@ function getConfig() {
  */
 function getTimellineFile() {
   var config   = getConfig();
-  var filename = config.twtfile || '/twtxt.txt';
+
   var HOME     = getUserHome();
   var timelineFile  = HOME + '/' + filename;
+
+  var filename = config.twtfile || timelineFile;  
+
   return timelineFile;
 }
 
@@ -72,11 +77,25 @@ function serializeTweet(description, date) {
  * Append a new tweet to your twtxt file.
  * @return {[type]} [description]
  */
-function tweet() {
+function tweet(description) {
   // init
-  var MAXCHARS = 140;
   var twtfile  = getTimellineFile();
 
+  output = serializeTweet(description);
+
+  fs.appendFile(twtfile, output, function (err) {
+    if (err) {
+      console.error(err);
+    }
+  });
+}
+
+
+/**
+ * run as bin
+ */
+function bin() {
+  var MAXCHARS = 140;
   var description = process.argv[2];
 
   if (!description) {
@@ -89,14 +108,13 @@ function tweet() {
     process.exit(-1);
   }
 
-  output = serializeTweet(description);
-
-  fs.appendFile(twtfile, output, function (err) {
-    if (err) {
-      console.error(err);
-    }
-  });
+  tweet(description);
 }
 
 
-tweet();
+// If one import this file, this is a module, otherwise a library
+if (require.main === module) {
+    bin(process.argv);
+}
+
+module.exports = tweet;
