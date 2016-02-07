@@ -11,7 +11,35 @@ function getUserHome() {
   return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
 }
 
+/**
+ * gets the default config file
+ * @return {String} returns location of config file
+ */
+function getConfigFile() {
+  var defaultConfigFile = 'twtxt.json';
+  var ret =  getUserHome() + '/.config/' + defaultConfigFile;
+  console.log('default : ' + ret);
+  return ret;
+}
 
+/**
+ * gets a config
+ * @return {String} A config
+ */
+function getConfig() {
+  var configFile = getConfigFile();
+  console.log('getting config from : ' + configFile);
+  try {
+   var config  = require(configFile);
+   console.log('config : ');
+   console.log(config);
+   return (config);
+  }
+  catch (e) {
+    console.log(e);
+    process.exit(-1);
+  }
+}
 
 // twtxt functions
 
@@ -20,7 +48,8 @@ function getUserHome() {
  * @return {[String]} location of timeline
  */
 function getTimellineFile() {
-  var filename = '/twtxt.txt';
+  var config   = getConfig();
+  var filename = config.twtfile || '/twtxt.txt';
   var HOME     = getUserHome();
   var timelineFile  = HOME + '/' + filename;
   return timelineFile;
