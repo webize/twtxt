@@ -6,6 +6,27 @@ var program = require('commander');
 var request = require('request');
 var debug   = require('debug')('twtxt');
 var error   = debug('app:error');
+var childProcess = require('child_process');
+
+
+// helper functions
+function hook(command) {
+  var proc = childProcess.exec(command, function (error, stdout, stderr) {
+    if (error) {
+      console.error(error.stack);
+      console.error('Error code: '+error.code);
+      console.error('Signal received: '+error.signal);
+    }
+    debug('Child Process STDOUT: '+stdout);
+    console.error('Child Process STDERR: '+stderr);
+  });
+
+  proc.on('exit', function (code) {
+    debug('Child process exited with exit code '+code);
+  });
+}
+
+
 
 // config functions
 
@@ -161,10 +182,14 @@ function writeTweet(twtfile, output) {
  */
 function tweet(description) {
   // init
+  var config   = getConfig();
   var twtfile  = getTimellineFile();
-  output = serializeTweet(description);
-  writeTweet(twtfile, output);
+  output       = serializeTweet(description);
 
+  writeTweet(twtfile, output);
+  if (config.post_tweet_hook) {
+    hook(config.post_tweet_hook);
+  }
 }
 
 /**
