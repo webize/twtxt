@@ -26,6 +26,18 @@ function getTimellineFile() {
   return timelineFile;
 }
 
+/**
+ * serializes a tweet
+ * @param  {String} description The desscription
+ * @param  {[type]} date        Date
+ * @return {String}             formatted entry
+ */
+function serializeTweet(description, date) {
+  var now    = date || new Date().toISOString();
+  var output = now + "\t" + description + '\n';
+  console.log('blogging : ' + output);
+  return output;
+}
 
 /**
  * Append a new tweet to your twtxt file.
@@ -34,7 +46,6 @@ function getTimellineFile() {
 function tweet() {
   // init
   var MAXCHARS = 140;
-  var now      = new Date().toISOString();
   var twtfile  = getTimellineFile();
 
   var description = process.argv[2];
@@ -49,9 +60,7 @@ function tweet() {
     process.exit(-1);
   }
 
-
-  var output = now + "\t" + description + '\n';
-  console.log('blogging : ' + output);
+  output = serializeTweet(description);
 
   fs.appendFile(twtfile, output, function (err) {
     if (err) {
