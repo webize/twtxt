@@ -3,6 +3,7 @@
 // requires
 var fs      = require('fs');
 var program = require('commander');
+var request = require('request');
 
 // config functions
 
@@ -90,25 +91,42 @@ function serializeTweet(description, date) {
 
 /**
  * parseTimeline
- * @param  {String}   file     which file
+ * @param  {String}   uri      which uri
  * @param  {String}   nick     which nick
  * @param  {Function} callback The callback
  */
-function parseTimeline(file, nick, callback) {
-  fs.readFile(file, "utf-8", function(err, val) {
-    if (err) {
-      callback(err);
-    } else {
-      var ret = [];
-      var arr = val.split('\n');
-      for (var i = 0; i < arr.length; i++) {
-        if (arr[i]) {
-          ret.push(parsePost(arr[i], nick));
+function parseTimeline(uri, nick, callback) {
+  if (uri && uri.indexOf('http') === 0) {
+    request(uri, function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        var ret = [];
+        var arr = body.split('\n');
+        for (var i = 0; i < arr.length; i++) {
+          if (arr[i]) {
+            ret.push(parsePost(arr[i], nick));
+          }
         }
+        callback(null, (ret));
+      } else {
+        callback(error);
       }
-      callback(null, (ret));
-    }
-  });
+    });
+  } else {
+    fs.readFile(uri, "utf-8", function(err, val) {
+      if (err) {
+        callback(err);
+      } else {
+        var ret = [];
+        var arr = val.split('\n');
+        for (var i = 0; i < arr.length; i++) {
+          if (arr[i]) {
+            ret.push(parsePost(arr[i], nick));
+          }
+        }
+        callback(null, (ret));
+      }
+    });
+  }
 }
 
 /**
@@ -194,8 +212,11 @@ function unfollow(user) {
 function timeline() {
   var config = getConfig();
   var nick = config.nick || 'you';
+  var following = config.following;
+
+  // local
   var twtfile  = getTimellineFile();
-  var posts = parseTimeline(twtfile, nick, function(err, val) {
+  parseTimeline(twtfile, nick, function(err, val) {
     if (err) {
       console.error(err);
     } else {
@@ -205,6 +226,24 @@ function timeline() {
       }
     }
   });
+
+  // remote
+  for (var i = 0; i < following.length; i++) {
+
+    var uri = following[i].uri;
+    parseTimeline(uri, following[i].user, function(err, val) {
+      if (err) {
+        console.error(err);
+      } else {
+        for (var i = 0; i < val.length; i++) {
+          console.log("➤ " + val[i].nick + ' (' + val[i].time + ')');
+          console.log(val[i].description);
+        }
+      }
+    });
+
+  }
+
 }
 
 
