@@ -166,6 +166,20 @@ function tweet(description) {
 }
 
 /**
+ * displays the posts
+ * @param  {Array} posts the posts to display
+ */
+function displayPosts(posts) {
+  posts = posts.sort(function(a,b){
+    return new Date(a.time) > new Date(b.time);
+  });
+  for (var i = 0; i < posts.length; i++) {
+    console.log("➤ " + posts[i].nick + ' (' + posts[i].time + ')');
+    console.log(posts[i].description);
+  }
+}
+
+/**
  * follow a user
  * @param  {String} user the user to follow
  */
@@ -212,35 +226,32 @@ function unfollow(user) {
 function timeline() {
   var config = getConfig();
   var nick = config.nick || 'you';
-  var following = config.following;
+  var following = config.following || [];
+  var fetched = 0;
+  var sources = 1 + following.length;
+  var posts = [];
 
-  // local
-  var twtfile  = getTimellineFile();
-  parseTimeline(twtfile, nick, function(err, val) {
+  function callback(err, val) {
+    fetched++;
     if (err) {
       console.error(err);
     } else {
-      for (var i = 0; i < val.length; i++) {
-        console.log("➤ " + val[i].nick + ' (' + val[i].time + ')');
-        console.log(val[i].description);
+      posts = posts.concat(val);
+      if (fetched === sources) {
+        displayPosts(posts);
       }
     }
-  });
+  }
+
+  // local
+  var twtfile  = getTimellineFile();
+  parseTimeline(twtfile, nick, callback);
 
   // remote
   for (var i = 0; i < following.length; i++) {
 
     var uri = following[i].uri;
-    parseTimeline(uri, following[i].user, function(err, val) {
-      if (err) {
-        console.error(err);
-      } else {
-        for (var i = 0; i < val.length; i++) {
-          console.log("➤ " + val[i].nick + ' (' + val[i].time + ')');
-          console.log(val[i].description);
-        }
-      }
-    });
+    parseTimeline(uri, following[i].user, callback);
 
   }
 
