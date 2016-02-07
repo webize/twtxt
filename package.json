@@ -1,6 +1,6 @@
 {
   "name": "twtxt",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "a decentralised, minimalist microblogging service for hackers",
   "main": "twtxt.js",
   "directories": {

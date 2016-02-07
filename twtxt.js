@@ -5,8 +5,12 @@ var fs      = require('fs');
 var program = require('commander');
 var request = require('request');
 var debug   = require('debug')('twtxt');
-var error   = debug('app:error');
 var childProcess = require('child_process');
+
+var error   = debug('app:error');
+
+// defaults
+var default_limit_timeline = 20;
 
 
 // helper functions
@@ -174,11 +178,28 @@ function parsePost(post, nick) {
  * @param  {[type]} output  tweet
  */
 function writeTweet(twtfile, output) {
-  debug('appending ' + twtfile + ' with ' + output);
-  fs.appendFile(twtfile, output, function (err) {
-    if (err) {
-      console.error(err);
+  var config = getConfig();
+  parseTimeline(twtfile, config.user, function(err, posts) {
+    str = '';
+    posts = posts.sort(function(a,b){
+      return new Date(a.time) > new Date(b.time);
+    });
+    posts = posts.concat(parsePost(output, config.user));
+    var limit_timeline = config.limit_timeline || default_limit_timeline;
+    if (posts.length > limit_timeline) {
+      posts.splice(0, posts.length - limit_timeline);
     }
+
+    for (var i = 0; i < posts.length; i++) {
+      str += posts[i].time + '\t' + posts[i].description + '\n';
+    }
+
+    debug('writing ' + twtfile + ' with ' + str);
+    fs.writeFile(twtfile, str, function (err) {
+      if (err) {
+        console.error(err);
+      }
+    });
   });
 }
 
@@ -289,7 +310,6 @@ function timeline() {
   }
 
 }
-
 
 
 // cli functions
