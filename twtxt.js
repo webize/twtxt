@@ -289,7 +289,7 @@ function unfollow(user) {
 */
 function timeline() {
   var config = getConfig();
-  var nick = config.nick || 'you';
+  var nick = config.user || 'you';
   var following = config.following || [];
   var fetched = 0;
   var sources = 1 + following.length;
