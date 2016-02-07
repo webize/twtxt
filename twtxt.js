@@ -157,6 +157,7 @@ function follow(user, uri) {
   config.following.push( {"user" : user, "uri": uri} );
   writeConfig(config);
   console.log(config);
+  console.log("✓ You’re now following "+user+".");
 }
 
 /**
@@ -184,6 +185,7 @@ function unfollow(user) {
   }
   writeConfig(config);
   console.log(config);
+  console.log("✓ You’ve unfollowed "+user+".");
 }
 
 /**

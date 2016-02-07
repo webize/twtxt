@@ -1,6 +1,6 @@
 {
   "name": "twtxt",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "a decentralised, minimalist microblogging service for hackers",
   "main": "twtxt.js",
   "directories": {
@@ -25,5 +25,8 @@
   "homepage": "https://github.com/webize/twtxt#readme",
   "dependencies": {
     "commander": "^2.9.0"
+  },
+  "bin": {
+    "twtxt": "twtxt.js"
   }
 }
