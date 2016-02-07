@@ -10,6 +10,11 @@ var childProcess = require('child_process');
 
 
 // helper functions
+
+/**
+ * hook
+ * @param  {String} hook run a hook
+ */
 function hook(command) {
   var proc = childProcess.exec(command, function (error, stdout, stderr) {
     if (error) {
@@ -88,7 +93,7 @@ function writeConfig(config) {
  * returns location of timeline
  * @return {[String]} location of timeline
  */
-function getTimellineFile() {
+function getTimelineFile() {
   var config   = getConfig();
 
   var HOME     = getUserHome();
@@ -96,7 +101,7 @@ function getTimellineFile() {
 
   var filename = config.twtfile || timelineFile;
 
-  return timelineFile;
+  return filename;
 }
 
 /**
@@ -169,6 +174,7 @@ function parsePost(post, nick) {
  * @param  {[type]} output  tweet
  */
 function writeTweet(twtfile, output) {
+  debug('appending ' + twtfile + ' with ' + output);
   fs.appendFile(twtfile, output, function (err) {
     if (err) {
       console.error(err);
@@ -183,7 +189,7 @@ function writeTweet(twtfile, output) {
 function tweet(description) {
   // init
   var config   = getConfig();
-  var twtfile  = getTimellineFile();
+  var twtfile  = getTimelineFile();
   output       = serializeTweet(description);
 
   writeTweet(twtfile, output);
@@ -271,7 +277,7 @@ function timeline() {
   }
 
   // local
-  var twtfile  = getTimellineFile();
+  var twtfile  = getTimelineFile();
   parseTimeline(twtfile, nick, callback);
 
   // remote
