@@ -117,12 +117,38 @@ function tweet(description) {
 /**
  * follow a user
  * @param  {String} user the user to follow
- * @param  {String} uri  the uri to follow
  */
 function follow(user, uri) {
   var config = getConfig();
-  config.following = config.follow || [];
+  config.following = config.following || [];
   config.following.push( {"user" : user, "uri": uri} );
+  writeConfig(config);
+  console.log(config);
+}
+
+/**
+ * list following
+ */
+function following() {
+  var config = getConfig();
+  config.following = config.following || [];
+  for (var i = 0; i < config.following.length; i++) {
+    console.log('➤ ' + config.following[i].user + ' @ ' + config.following[i].uri);
+  }
+}
+
+/**
+ * unfollow a user
+ * @param  {String} user the user to follow
+ */
+function unfollow(user) {
+  var config = getConfig();
+  config.following = config.following || [];
+  for (var i = 0; i < config.following.length; i++) {
+    if (config.following[i] && config.following[i].user === user ) {
+      config.following.splice(i,1);
+    }
+  }
   writeConfig(config);
   console.log(config);
 }
@@ -134,6 +160,8 @@ function follow(user, uri) {
  */
 function bin() {
   var MAXCHARS = 140;
+  var user;
+  var uri;
 
   program
     .arguments('<cmd> [arg] [uri]')
@@ -168,8 +196,8 @@ function bin() {
 
     tweet(description);
   } else if (cmdValue === 'follow') {
-    var user = argValue;
-    var uri  = uriValue;
+    user = argValue;
+    uri  = uriValue;
 
     if (!user) {
       console.error('Usage: twtxt follow <user> <uri>');
@@ -182,6 +210,19 @@ function bin() {
     }
 
     follow(user, uri);
+
+  } else if (cmdValue === 'unfollow') {
+    user = argValue;
+
+    if (!user) {
+      console.error('Usage: twtxt unfollow <user>');
+      process.exit(-1);
+    }
+
+    unfollow(user);
+
+  } else if (cmdValue === 'following') {
+    following();
 
   } else {
     console.error(cmdValue + ' : not recognized');
