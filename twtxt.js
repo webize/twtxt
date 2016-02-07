@@ -274,6 +274,7 @@ function bin() {
     .arguments('<cmd> [arg] [uri]')
     .option('-c, --config <path>', 'Specify a custom config file location.')
     .option('-v, --verbose', 'Enable verbose output for deubgging purposes')
+    .option('--version', 'Shows the version and exit.')
     .action(function (cmd, arg, uri) {
        cmdValue = cmd;
        argValue = arg;
