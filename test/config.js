@@ -17,4 +17,10 @@ describe('Config Functions', function () {
     });
   });
 
+  describe('getTimelineFile', function() {
+    it('getTimelineFile is a function', function () {
+      expect( (config.getTimelineFile)).to.be.a('function');
+    });
+  });
+
 });
