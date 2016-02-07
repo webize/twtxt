@@ -25,6 +25,7 @@
   "homepage": "https://github.com/webize/twtxt#readme",
   "dependencies": {
     "commander": "^2.9.0",
+    "debug": "^2.2.0",
     "request": "^2.69.0"
   },
   "bin": {

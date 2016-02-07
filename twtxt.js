@@ -4,6 +4,8 @@
 var fs      = require('fs');
 var program = require('commander');
 var request = require('request');
+var debug   = require('debug')('twtxt');
+var error   = debug('app:error');
 
 // config functions
 
@@ -22,8 +24,8 @@ function getUserHome() {
 function getConfigFile() {
   var defaultConfigFile = 'twtxt.json';
   var ret =  getUserHome() + '/.config/' + defaultConfigFile;
-  console.log('default : ' + ret);
-  return ret;
+  debug('default : ' + ret);
+  return program.config || ret;
 }
 
 /**
@@ -32,14 +34,14 @@ function getConfigFile() {
  */
 function getConfig() {
   var configFile = getConfigFile();
-  console.log('getting config from : ' + configFile);
+  debug('getting config from : ' + configFile);
   try {
    var config  = require(configFile);
-   console.log('config : ');
-   console.log(config);
+   debug('config : ');
+   debug(config);
    return (config);
   } catch (e) {
-    console.log(e);
+    console.error(e);
     process.exit(-1);
   }
 }
@@ -50,8 +52,8 @@ function getConfig() {
  */
 function writeConfig(config) {
   var configFile = getConfigFile();
-  console.log('writing : ');
-  console.log(config);
+  debug('writing : ');
+  debug(config);
   fs.writeFile(configFile, JSON.stringify(config), function(err) {
     if (err) {
       console.error(err);
@@ -85,7 +87,7 @@ function getTimellineFile() {
 function serializeTweet(description, date) {
   var now    = date || new Date().toISOString();
   var output = now + "\t" + description + '\n';
-  console.log('blogging : ' + output);
+  debug('blogging : ' + output);
   return output;
 }
 
@@ -188,7 +190,7 @@ function follow(user, uri) {
   config.following = config.following || [];
   config.following.push( {"user" : user, "uri": uri} );
   writeConfig(config);
-  console.log(config);
+  debug(config);
   console.log("✓ You’re now following "+user+".");
 }
 
@@ -216,7 +218,7 @@ function unfollow(user) {
     }
   }
   writeConfig(config);
-  console.log(config);
+  debug(config);
   console.log("✓ You’ve unfollowed "+user+".");
 }
 
@@ -270,6 +272,8 @@ function bin() {
 
   program
     .arguments('<cmd> [arg] [uri]')
+    .option('-c, --config <path>', 'Specify a custom config file location.')
+    .option('-v, --verbose', 'Enable verbose output for deubgging purposes')
     .action(function (cmd, arg, uri) {
        cmdValue = cmd;
        argValue = arg;
@@ -282,9 +286,14 @@ function bin() {
      console.error('no command given!');
      process.exit(1);
   }
-  console.log('command:', cmdValue);
-  console.log('arg:', argValue || "no arg given");
-  console.log('uri:', uriValue || "no uri given");
+  if (program.verbose) {
+    process.env.DEBUG = 'twtxt';
+    debug = console.log;
+  }
+  debug('command:', cmdValue);
+  debug('arg: ', argValue || "no arg given");
+  debug('uri: ', uriValue || "no uri given");
+  debug('verbose: ' + program.verbose);
 
   if (cmdValue === 'tweet') {
     var description = argValue;
@@ -350,4 +359,4 @@ module.exports = {
   unfollow: unfollow,
   following: following,
   timeline: timeline
-}
+};
