@@ -9,6 +9,14 @@ var childProcess  = require('child_process');
 var readline      = require('readline');
 var moment        = require('moment');
 
+var tweet         = require("../lib/cli").tweet;
+var follow        = require("../lib/cli").follow;
+var unfollow      = require("../lib/cli").unfollow;
+var following     = require("../lib/cli").following;
+var quickstart    = require("../lib/cli").quickstart;
+var timeline      = require("../lib/cli").timeline;
+
+
 var error   = debug('app:error');
 
 // defaults
