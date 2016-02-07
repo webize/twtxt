@@ -24,7 +24,7 @@ So you want to get some thoughts out on the internet in a convenient and slick w
 Features
 --------
 - A beautiful command-line interface thanks to click.
-- Asynchronous HTTP requests thanks to asyncio/aiohttp and Python 3.
+- Asynchronous HTTP requests
 - Integrates well with existing tools (scp, cut, echo, date, etc.) and your shell.
 - Don’t like the official client? Tweet using ``echo -e "`date -Im`\tHello world!" >> twtxt.txt``!
 
