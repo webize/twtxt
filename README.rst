@@ -104,19 +104,17 @@ Here’s an example ``conf`` file, showing every currently supported option:
 
 .. code::
 
-    [twtxt]
-    nick = buckket
-    twtfile = ~/twtxt.txt
-    check_following = True
-    use_pager = False
-    limit_timeline = 20
-    timeout = 5.0
-    sorting = descending
-    post_tweet_hook = "scp {twtfile} buckket@example.org:~/public_html/twtxt.txt"
-
-    [following]
-    bob = https://example.org/bob.txt
-    alice = https://example.org/alice.txt
+    {
+      "user": "melvincarvalho",
+      "twtfile": "/home/user/twtxt.txt",
+      "limit_timeline": "20",
+      "following": [
+        {
+          "user": "twtxt",
+          "uri": "https://buckket.org/twtxt_news.txt"
+        }
+      ]
+    }
 
 
 [twtxt] section:

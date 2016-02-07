@@ -353,6 +353,7 @@ function quickstart() {
         config = {};
         config.user = nick;
         config.twtfile = path;
+        config.limit_timeline = "20";
         if (follow) {
           config.following = [ {"user" : "twtxt", "uri": "https://buckket.org/twtxt_news.txt" }];
           rl.close();
