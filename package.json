@@ -1,6 +1,6 @@
 {
   "name": "twtxt",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "a decentralised, minimalist microblogging service for hackers",
   "main": "twtxt.js",
   "directories": {
@@ -29,7 +29,14 @@
     "moment": "^2.11.2",
     "request": "^2.69.0"
   },
+  "scripts": {
+    "test": "mocha"
+  },
   "bin": {
     "twtxt": "twtxt.js"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5"
   }
 }
