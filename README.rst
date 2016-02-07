@@ -41,7 +41,7 @@ Release version:
 
     $ npm install -g twtxt
 
-
+3) Run ``twtxt quickstart``. :)
 
 Usage
 -----
