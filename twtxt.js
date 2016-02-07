@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 
 // requires
-var fs      = require('fs');
-var program = require('commander');
-var request = require('request');
-var debug   = require('debug')('twtxt');
+var fs           = require('fs');
+var program      = require('commander');
+var request      = require('request');
+var debug        = require('debug')('twtxt');
 var childProcess = require('child_process');
+var readline     = require('readline');
+
 
 var error   = debug('app:error');
 
@@ -16,9 +18,9 @@ var default_limit_timeline = 20;
 // helper functions
 
 /**
- * hook
- * @param  {String} hook run a hook
- */
+* hook
+* @param  {String} hook run a hook
+*/
 function hook(command) {
   var proc = childProcess.exec(command, function (error, stdout, stderr) {
     if (error) {
@@ -40,17 +42,25 @@ function hook(command) {
 // config functions
 
 /**
- * getUserHome
- * @return {String} home directory
- */
+* getUserHome
+* @return {String} home directory
+*/
 function getUserHome() {
   return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
 }
 
 /**
- * gets the default config file
- * @return {String} returns location of config file
- */
+* getUserName
+* @return {String} user name
+*/
+function getUserName() {
+  return process.env.USER;
+}
+
+/**
+* gets the default config file
+* @return {String} returns location of config file
+*/
 function getConfigFile() {
   var defaultConfigFile = 'twtxt.json';
   var ret =  getUserHome() + '/.config/' + defaultConfigFile;
@@ -59,17 +69,17 @@ function getConfigFile() {
 }
 
 /**
- * gets a config
- * @return {String} A config
- */
+* gets a config
+* @return {String} A config
+*/
 function getConfig() {
   var configFile = getConfigFile();
   debug('getting config from : ' + configFile);
   try {
-   var config  = require(configFile);
-   debug('config : ');
-   debug(config);
-   return (config);
+    var config  = require(configFile);
+    debug('config : ');
+    debug(config);
+    return (config);
   } catch (e) {
     console.error(e);
     process.exit(-1);
@@ -77,9 +87,9 @@ function getConfig() {
 }
 
 /**
- * write a config file
- * @param  {Object} config the config
- */
+* write a config file
+* @param  {Object} config the config
+*/
 function writeConfig(config) {
   var configFile = getConfigFile();
   debug('writing : ');
@@ -94,9 +104,9 @@ function writeConfig(config) {
 // twtxt functions
 
 /**
- * returns location of timeline
- * @return {[String]} location of timeline
- */
+* returns location of timeline
+* @return {[String]} location of timeline
+*/
 function getTimelineFile() {
   var config   = getConfig();
 
@@ -109,11 +119,11 @@ function getTimelineFile() {
 }
 
 /**
- * serializes a tweet
- * @param  {String} description The desscription
- * @param  {[type]} date        Date
- * @return {String}             formatted entry
- */
+* serializes a tweet
+* @param  {String} description The desscription
+* @param  {[type]} date        Date
+* @return {String}             formatted entry
+*/
 function serializeTweet(description, date) {
   var now    = date || new Date().toISOString();
   var output = now + "\t" + description + '\n';
@@ -122,11 +132,11 @@ function serializeTweet(description, date) {
 }
 
 /**
- * parseTimeline
- * @param  {String}   uri      which uri
- * @param  {String}   nick     which nick
- * @param  {Function} callback The callback
- */
+* parseTimeline
+* @param  {String}   uri      which uri
+* @param  {String}   nick     which nick
+* @param  {Function} callback The callback
+*/
 function parseTimeline(uri, nick, callback) {
   if (uri && uri.indexOf('http') === 0) {
     request(uri, function (error, response, body) {
@@ -162,21 +172,21 @@ function parseTimeline(uri, nick, callback) {
 }
 
 /**
- * parses a post
- * @param  {String} post A post
- * @param  {String} nick A nick
- * @return {Object}      A time, description and nick
- */
+* parses a post
+* @param  {String} post A post
+* @param  {String} nick A nick
+* @return {Object}      A time, description and nick
+*/
 function parsePost(post, nick) {
   var vals = post.split('\t');
   return { "time" : vals[0], "description" : vals[1], "nick" : nick };
 }
 
 /**
- * writes a tweet
- * @param  {String} twtfile file to write to
- * @param  {[type]} output  tweet
- */
+* writes a tweet
+* @param  {String} twtfile file to write to
+* @param  {[type]} output  tweet
+*/
 function writeTweet(twtfile, output) {
   var config = getConfig();
   parseTimeline(twtfile, config.user, function(err, posts) {
@@ -204,9 +214,9 @@ function writeTweet(twtfile, output) {
 }
 
 /**
- * Append a new tweet to your twtxt file.
- * @return {[type]} [description]
- */
+* Append a new tweet to your twtxt file.
+* @return {[type]} [description]
+*/
 function tweet(description) {
   // init
   var config   = getConfig();
@@ -220,9 +230,9 @@ function tweet(description) {
 }
 
 /**
- * displays the posts
- * @param  {Array} posts the posts to display
- */
+* displays the posts
+* @param  {Array} posts the posts to display
+*/
 function displayPosts(posts) {
   posts = posts.sort(function(a,b){
     return new Date(a.time) > new Date(b.time);
@@ -234,9 +244,9 @@ function displayPosts(posts) {
 }
 
 /**
- * follow a user
- * @param  {String} user the user to follow
- */
+* follow a user
+* @param  {String} user the user to follow
+*/
 function follow(user, uri) {
   var config = getConfig();
   config.following = config.following || [];
@@ -247,8 +257,8 @@ function follow(user, uri) {
 }
 
 /**
- * list following
- */
+* list following
+*/
 function following() {
   var config = getConfig();
   config.following = config.following || [];
@@ -258,9 +268,9 @@ function following() {
 }
 
 /**
- * unfollow a user
- * @param  {String} user the user to follow
- */
+* unfollow a user
+* @param  {String} user the user to follow
+*/
 function unfollow(user) {
   var config = getConfig();
   config.following = config.following || [];
@@ -275,8 +285,8 @@ function unfollow(user) {
 }
 
 /**
- * list following
- */
+* list following
+*/
 function timeline() {
   var config = getConfig();
   var nick = config.nick || 'you';
@@ -311,32 +321,79 @@ function timeline() {
 
 }
 
+/**
+* quick start
+*/
+function quickstart() {
+
+  var rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  var help = "This wizard will generate a basic configuration file for twtxt with all mandatory options set. Have a look at the README.rst to get information about the other available options and their meaning.";
+
+  console.log(help);
+  var defaultNick = getUserName();
+  var defaultPath = getTimelineFile();
+  var defaultFollow = true;
+
+  rl.question('➤ Please enter your desired nick: ( '+ defaultNick +' ) ', function(nick)  {
+    nick = nick || defaultNick;
+
+    rl.question('➤ Please enter the desired location for your twtxt file: ( '+ defaultPath +' ) ', function(path)  {
+      path = path || defaultPath;
+
+      rl.question('➤ Do you want to follow the twtxt news feed?: ( '+ (defaultFollow?'y':'n') + ' ) ', function(follow)  {
+        follow = follow || defaultFollow;
+        debug('Thank you: ', nick);
+        debug('Path: ', path);
+        debug('Follow: ', follow);
+
+        config = {};
+        config.user = nick;
+        config.twtfile = path;
+        if (follow) {
+          config.following = [ {"user" : "twtxt", "uri": "https://buckket.org/twtxt_news.txt" }];
+          rl.close();
+          debug(config);
+          fs.writeFile(getConfigFile(), JSON.stringify(config));
+          console.log('✓ Created config file at ' + getConfigFile());
+        }
+
+      });
+
+    });
+
+  });
+
+}
 
 // cli functions
 /**
- * run as bin
- */
+* run as bin
+*/
 function bin() {
   var MAXCHARS = 140;
   var user;
   var uri;
 
   program
-    .arguments('<cmd> [arg] [uri]')
-    .option('-c, --config <path>', 'Specify a custom config file location.')
-    .option('-v, --verbose', 'Enable verbose output for deubgging purposes')
-    .option('--version', 'Shows the version and exit.')
-    .action(function (cmd, arg, uri) {
-       cmdValue = cmd;
-       argValue = arg;
-       uriValue = uri;
-    });
+  .arguments('<cmd> [arg] [uri]')
+  .option('-c, --config <path>', 'Specify a custom config file location.')
+  .option('-v, --verbose', 'Enable verbose output for deubgging purposes')
+  .option('--version', 'Shows the version and exit.')
+  .action(function (cmd, arg, uri) {
+    cmdValue = cmd;
+    argValue = arg;
+    uriValue = uri;
+  });
 
   program.parse(process.argv);
 
   if (typeof cmdValue === 'undefined') {
-     console.error('no command given!');
-     process.exit(1);
+    console.error('no command given!');
+    process.exit(1);
   }
   if (program.verbose) {
     process.env.DEBUG = 'twtxt';
@@ -393,6 +450,9 @@ function bin() {
   } else if (cmdValue === 'timeline') {
     timeline();
 
+  } else if (cmdValue === 'quickstart') {
+    quickstart();
+
   } else {
     console.error(cmdValue + ' : not recognized');
   }
@@ -402,7 +462,7 @@ function bin() {
 
 // If one import this file, this is a module, otherwise a library
 if (require.main === module) {
-    bin(process.argv);
+  bin(process.argv);
 }
 
 module.exports = {
