@@ -34,7 +34,7 @@ Installation
 
 Release version:
 ================
-1) Make sure that you have at least **Python 3.4.1** installed.
+1) Make sure that you have the latest npm and node
 
 2) Install this package using pip:
 
@@ -98,6 +98,8 @@ View your timeline:
 Configuration
 -------------
 twtxt uses a simple INI-like configuration file. It’s recommended to use ``twtxt quickstart`` to create it. On Linux twtxt checks ``~/.config/twtxt/config`` for it’s configuration. Consult `get_app_dir <http://click.pocoo.org/6/api/#click.get_app_dir>`_ to find out the config directory for other operating systems.
+
+Note: The npm version uses json instead of an ini.
 
 Here’s an example ``conf`` file, showing every currently supported option:
 
