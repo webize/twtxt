@@ -88,6 +88,39 @@ function serializeTweet(description, date) {
   return output;
 }
 
+/**
+ * parseTimeline
+ * @param  {String}   file     which file
+ * @param  {String}   nick     which nick
+ * @param  {Function} callback The callback
+ */
+function parseTimeline(file, nick, callback) {
+  fs.readFile(file, "utf-8", function(err, val) {
+    if (err) {
+      callback(err);
+    } else {
+      var ret = [];
+      var arr = val.split('\n');
+      for (var i = 0; i < arr.length; i++) {
+        if (arr[i]) {
+          ret.push(parsePost(arr[i], nick));
+        }
+      }
+      callback(null, (ret));
+    }
+  });
+}
+
+/**
+ * parses a post
+ * @param  {String} post A post
+ * @param  {String} nick A nick
+ * @return {Object}      A time, description and nick
+ */
+function parsePost(post, nick) {
+  var vals = post.split('\t');
+  return { "time" : vals[0], "description" : vals[1], "nick" : nick };
+}
 
 /**
  * writes a tweet
@@ -152,6 +185,26 @@ function unfollow(user) {
   writeConfig(config);
   console.log(config);
 }
+
+/**
+ * list following
+ */
+function timeline() {
+  var config = getConfig();
+  var nick = config.nick || 'you';
+  var twtfile  = getTimellineFile();
+  var posts = parseTimeline(twtfile, nick, function(err, val) {
+    if (err) {
+      console.error(err);
+    } else {
+      for (var i = 0; i < val.length; i++) {
+        console.log("➤ " + val[i].nick + ' (' + val[i].time + ')');
+        console.log(val[i].description);
+      }
+    }
+  });
+}
+
 
 
 // cli functions
@@ -224,6 +277,9 @@ function bin() {
   } else if (cmdValue === 'following') {
     following();
 
+  } else if (cmdValue === 'timeline') {
+    timeline();
+
   } else {
     console.error(cmdValue + ' : not recognized');
   }
@@ -236,4 +292,10 @@ if (require.main === module) {
     bin(process.argv);
 }
 
-module.exports = tweet;
+module.exports = {
+  tweet: tweet,
+  follow: follow,
+  unfollow: unfollow,
+  following: following,
+  timeline: timeline
+}
