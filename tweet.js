@@ -12,7 +12,21 @@ function getUserHome() {
 }
 
 
+
 // twtxt functions
+
+/**
+ * returns location of timeline
+ * @return {[String]} location of timeline
+ */
+function getTimellineFile() {
+  var filename = '/twtxt.txt';
+  var HOME     = getUserHome();
+  var timelineFile  = HOME + '/' + filename;
+  return timelineFile;
+}
+
+
 /**
  * Append a new tweet to your twtxt file.
  * @return {[type]} [description]
@@ -20,9 +34,8 @@ function getUserHome() {
 function tweet() {
   // init
   var MAXCHARS = 140;
-  var HOME     = getUserHome();
-  var twtfile  = HOME + '/twtxt.txt';
   var now      = new Date().toISOString();
+  var twtfile  = getTimellineFile();
 
   var description = process.argv[2];
 
