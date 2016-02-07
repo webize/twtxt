@@ -1,4 +1,3 @@
-[![Stories in Ready](https://badge.waffle.io/webize/twtxt.png?label=ready&title=Ready)](https://waffle.io/webize/twtxt)
 
 twtxt
 ~~~~~
@@ -36,7 +35,7 @@ Release version:
 ================
 1) Make sure that you have the latest npm and node
 
-2) Install this package using pip:
+2) Install this package using npm:
 
 .. code::
 
