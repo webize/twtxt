@@ -37,11 +37,25 @@ function getConfig() {
    console.log('config : ');
    console.log(config);
    return (config);
-  }
-  catch (e) {
+  } catch (e) {
     console.log(e);
     process.exit(-1);
   }
+}
+
+/**
+ * write a config file
+ * @param  {Object} config the config
+ */
+function writeConfig(config) {
+  var configFile = getConfigFile();
+  console.log('writing : ');
+  console.log(config);
+  fs.writeFile(configFile, JSON.stringify(config), function(err) {
+    if (err) {
+      console.error(err);
+    }
+  });
 }
 
 // twtxt functions
@@ -100,9 +114,21 @@ function tweet(description) {
 
 }
 
+/**
+ * follow a user
+ * @param  {String} user the user to follow
+ * @param  {String} uri  the uri to follow
+ */
+function follow(user, uri) {
+  var config = getConfig();
+  config.following = config.follow || [];
+  config.following.push( {"user" : user, "uri": uri} );
+  writeConfig(config);
+  console.log(config);
+}
+
 
 // cli functions
-
 /**
  * run as bin
  */
@@ -110,10 +136,11 @@ function bin() {
   var MAXCHARS = 140;
 
   program
-    .arguments('<cmd> [arg]')
-    .action(function (cmd, arg) {
+    .arguments('<cmd> [arg] [uri]')
+    .action(function (cmd, arg, uri) {
        cmdValue = cmd;
        argValue = arg;
+       uriValue = uri;
     });
 
   program.parse(process.argv);
@@ -124,6 +151,7 @@ function bin() {
   }
   console.log('command:', cmdValue);
   console.log('arg:', argValue || "no arg given");
+  console.log('uri:', uriValue || "no uri given");
 
   if (cmdValue === 'tweet') {
     var description = argValue;
@@ -139,6 +167,22 @@ function bin() {
     }
 
     tweet(description);
+  } else if (cmdValue === 'follow') {
+    var user = argValue;
+    var uri  = uriValue;
+
+    if (!user) {
+      console.error('Usage: twtxt follow <user> <uri>');
+      process.exit(-1);
+    }
+
+    if (!uri) {
+      console.error('Usage: twtxt follow <user> <uri>');
+      process.exit(-1);
+    }
+
+    follow(user, uri);
+
   } else {
     console.error(cmdValue + ' : not recognized');
   }
