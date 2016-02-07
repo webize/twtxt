@@ -1,13 +1,11 @@
-[twtxt]
-nick = buckket
-twtfile = ~/twtxt.ttl
-check_following = True
-use_pager = False
-limit_timeline = 20
-timeout = 5.0
-sorting = descending
-post_tweet_hook = "scp {twtfile} buckket@example.org:~/public_html/twtxt.ttl"
-
-[following]
-bob = https://example.org/bob.ttl#me
-alice = https://example.org/alice.ttl#me
+{
+  "user": "melvincarvalho",
+  "twtfile": "/home/user/twtxt.txt",
+  "limit_timeline": "20",
+  "following": [
+    {
+      "user": "twtxt",
+      "uri": "https://buckket.org/twtxt_news.txt"
+    }
+  ]
+}
